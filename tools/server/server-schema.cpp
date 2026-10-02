@@ -94,6 +94,10 @@ std::vector<std::unique_ptr<field>> make_llama_cmpl_schema(const common_params &
         ->set_limits(0.0f, 1.0f)
         ->set_desc("Limit the next token selection to a subset of tokens with cumulative probability above threshold P (1.0 = disabled)"));
 
+    add((new field_num("sqr_p", params.sampling.sqr_p))
+        ->set_limits(0.0f, 1.0f)
+        ->set_desc("Limit the next token selection to the sum of all the probabilities squared, factored by sqr_p"));
+
     add((new field_num("min_p", params.sampling.min_p))
         ->set_limits(0.0f, 1.0f)
         ->set_desc("The minimum probability for a token to be considered, relative to the probability of the most likely token (0 = disabled)"));

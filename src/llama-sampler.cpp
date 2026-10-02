@@ -1734,6 +1734,87 @@ struct llama_sampler * llama_sampler_init_top_p(float p, size_t min_keep) {
     );
 }
 
+// sqr-p
+
+struct llama_sampler_sqr_p : public llama_sampler_backend {
+    const float p;
+    const size_t min_keep;
+};
+
+static const char * llama_sampler_sqr_p_name(const struct llama_sampler * smpl) {
+    auto * sctx = (llama_sampler_sqr_p *) smpl->ctx;
+    return sctx->get_name();
+}
+
+static void llama_sampler_sqr_p_apply(struct llama_sampler * smpl, llama_token_data_array * cur_p) {
+    auto * ctx = (llama_sampler_sqr_p *) smpl->ctx;
+    const size_t n = cur_p->size;
+    if (ctx->p == 0.0f || !n) {
+        return;
+    }
+
+    llama_sampler_softmax_impl(cur_p, true);
+
+    float threshold = 0.0f;
+    for (size_t i = 0; i < n; ++i) {
+        const float p = cur_p->data[i].p;
+        threshold += p * p;
+    }
+
+    threshold = threshold * ctx->p;
+
+    size_t i = 1;
+    for (; i < n; ++i) {
+        if (cur_p->data[i].p < threshold && i >= ctx->min_keep) {
+            break;
+        }
+    }
+
+    cur_p->size = i;
+    llama_sampler_softmax_impl(cur_p, false);
+}
+
+static struct llama_sampler * llama_sampler_sqr_p_clone(const struct llama_sampler * smpl) {
+    const auto * ctx = (const llama_sampler_sqr_p *) smpl->ctx;
+    return llama_sampler_init_sqr_p(ctx->p, ctx->min_keep);
+}
+
+static void llama_sampler_sqr_p_free(struct llama_sampler * smpl) {
+    delete (llama_sampler_sqr_p *) smpl->ctx;
+}
+
+static struct llama_sampler_i llama_sampler_sqr_p_i = {
+    /* .name              = */ llama_sampler_sqr_p_name,
+    /* .accept            = */ nullptr,
+    /* .apply             = */ llama_sampler_sqr_p_apply,
+    /* .reset             = */ nullptr,
+    /* .clone             = */ llama_sampler_sqr_p_clone,
+    /* .free              = */ llama_sampler_sqr_p_free,
+    /* .backend_init      = */ nullptr,
+    /* .backend_accept    = */ nullptr,
+    /* .backend_apply     = */ nullptr,
+    /* .backend_set_input = */ nullptr,
+    /* .backend_reset     = */ nullptr,
+    /* .copy_state        = */ nullptr,
+};
+
+struct llama_sampler * llama_sampler_init_sqr_p(float p, size_t min_keep) {
+    const bool is_empty = p == 0.0f;
+
+    if (is_empty) {
+        return llama_sampler_init_empty("?sqr-p");
+    }
+
+    return llama_sampler_init(
+        /* .iface = */ &llama_sampler_sqr_p_i,
+        /* .ctx   = */ new llama_sampler_sqr_p {
+            ("sqr-p"),
+            /* .min_keep = */ p,
+            /* .enabled  = */ min_keep,
+        }
+    );
+}
+
 // min-p
 
 struct llama_sampler_min_p : public llama_sampler_backend {

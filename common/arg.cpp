@@ -2037,6 +2037,14 @@ common_params_context common_params_parser_init(common_params & params, llama_ex
         }
     ).set_sampling().set_env("LLAMA_ARG_TOP_P"));
     add_opt(common_arg(
+        {"--sqr-p"}, "N",
+        string_format("sqr-p sampling (default: %.2f, 0.0 = disabled)", (double)params.sampling.sqr_p),
+        [](common_params & params, const std::string & value) {
+            params.sampling.sqr_p = std::stof(value);
+            params.sampling.user_sampling_config |= common_params_sampling_config::COMMON_PARAMS_SAMPLING_CONFIG_SQR_P;
+        }
+    ).set_sampling().set_env("LLAMA_ARG_SQR_P"));
+    add_opt(common_arg(
         {"--min-p"}, "N",
         string_format("min-p sampling (default: %.2f, 0.0 = disabled)", (double)params.sampling.min_p),
         [](common_params & params, const std::string & value) {

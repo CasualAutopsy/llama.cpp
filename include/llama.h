@@ -1477,6 +1477,8 @@ extern "C" {
     /// @details Nucleus sampling described in academic paper "The Curious Case of Neural Text Degeneration" https://arxiv.org/abs/1904.09751
     LLAMA_API struct llama_sampler * llama_sampler_init_top_p      (float   p, size_t min_keep);
 
+    LLAMA_API struct llama_sampler * llama_sampler_init_sqr_p      (float   p, size_t min_keep);
+
     /// @details Minimum P sampling as described in https://github.com/ggml-org/llama.cpp/pull/3841
     LLAMA_API struct llama_sampler * llama_sampler_init_min_p      (float   p, size_t min_keep);
 

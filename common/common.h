@@ -119,15 +119,16 @@ enum common_sampler_type {
     COMMON_SAMPLER_TYPE_DRY         = 1,
     COMMON_SAMPLER_TYPE_TOP_K       = 2,
     COMMON_SAMPLER_TYPE_TOP_P       = 3,
-    COMMON_SAMPLER_TYPE_MIN_P       = 4,
-  //COMMON_SAMPLER_TYPE_TFS_Z       = 5,
-    COMMON_SAMPLER_TYPE_TYPICAL_P   = 6,
-    COMMON_SAMPLER_TYPE_TEMPERATURE = 7,
-    COMMON_SAMPLER_TYPE_XTC         = 8,
-    COMMON_SAMPLER_TYPE_INFILL      = 9,
-    COMMON_SAMPLER_TYPE_PENALTIES   = 10,
-    COMMON_SAMPLER_TYPE_TOP_N_SIGMA = 11,
-    COMMON_SAMPLER_TYPE_ADAPTIVE_P  = 12,
+    COMMON_SAMPLER_TYPE_SQR_P       = 4,
+    COMMON_SAMPLER_TYPE_MIN_P       = 5,
+  //COMMON_SAMPLER_TYPE_TFS_Z       = 6,
+    COMMON_SAMPLER_TYPE_TYPICAL_P   = 7,
+    COMMON_SAMPLER_TYPE_TEMPERATURE = 8,
+    COMMON_SAMPLER_TYPE_XTC         = 9,
+    COMMON_SAMPLER_TYPE_INFILL      = 10,
+    COMMON_SAMPLER_TYPE_PENALTIES   = 11,
+    COMMON_SAMPLER_TYPE_TOP_N_SIGMA = 12,
+    COMMON_SAMPLER_TYPE_ADAPTIVE_P  = 13,
 };
 
 // dimensionality reduction methods, used by cvector-generator
@@ -159,15 +160,16 @@ enum common_params_sampling_config : uint64_t {
     COMMON_PARAMS_SAMPLING_CONFIG_SAMPLERS        = 1 << 0,
     COMMON_PARAMS_SAMPLING_CONFIG_TOP_K           = 1 << 1,
     COMMON_PARAMS_SAMPLING_CONFIG_TOP_P           = 1 << 2,
-    COMMON_PARAMS_SAMPLING_CONFIG_MIN_P           = 1 << 3,
-    COMMON_PARAMS_SAMPLING_CONFIG_XTC_PROBABILITY = 1 << 4,
-    COMMON_PARAMS_SAMPLING_CONFIG_XTC_THRESHOLD   = 1 << 5,
-    COMMON_PARAMS_SAMPLING_CONFIG_TEMP            = 1 << 6,
-    COMMON_PARAMS_SAMPLING_CONFIG_PENALTY_LAST_N  = 1 << 7,
-    COMMON_PARAMS_SAMPLING_CONFIG_PENALTY_REPEAT  = 1 << 8,
-    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT        = 1 << 9,
-    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT_TAU    = 1 << 10,
-    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT_ETA    = 1 << 11,
+    COMMON_PARAMS_SAMPLING_CONFIG_SQR_P           = 1 << 3,
+    COMMON_PARAMS_SAMPLING_CONFIG_MIN_P           = 1 << 4,
+    COMMON_PARAMS_SAMPLING_CONFIG_XTC_PROBABILITY = 1 << 5,
+    COMMON_PARAMS_SAMPLING_CONFIG_XTC_THRESHOLD   = 1 << 6,
+    COMMON_PARAMS_SAMPLING_CONFIG_TEMP            = 1 << 7,
+    COMMON_PARAMS_SAMPLING_CONFIG_PENALTY_LAST_N  = 1 << 8,
+    COMMON_PARAMS_SAMPLING_CONFIG_PENALTY_REPEAT  = 1 << 9,
+    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT        = 1 << 10,
+    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT_TAU    = 1 << 11,
+    COMMON_PARAMS_SAMPLING_CONFIG_MIROSTAT_ETA    = 1 << 12,
 };
 
 enum common_speculative_type {
@@ -231,6 +233,7 @@ struct common_params_sampling {
     int32_t min_keep           = 0;      // 0 = disabled, otherwise samplers should return at least min_keep tokens
     int32_t top_k              = 40;     // <= 0 to use vocab size
     float   top_p              = 0.95f;  // 1.0 = disabled
+    float   sqr_p              = 0.00f;  // 0.0 = disabled
     float   min_p              = 0.05f;  // 0.0 = disabled
     float   xtc_probability    = 0.00f;  // 0.0 = disabled
     float   xtc_threshold      = 0.10f;  // > 0.5 disables XTC
@@ -267,6 +270,7 @@ struct common_params_sampling {
         COMMON_SAMPLER_TYPE_TOP_K,
         COMMON_SAMPLER_TYPE_TYPICAL_P,
         COMMON_SAMPLER_TYPE_TOP_P,
+        COMMON_SAMPLER_TYPE_SQR_P,
         COMMON_SAMPLER_TYPE_MIN_P,
         COMMON_SAMPLER_TYPE_XTC,
         COMMON_SAMPLER_TYPE_TEMPERATURE,
